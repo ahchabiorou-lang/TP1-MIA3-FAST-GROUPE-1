@@ -556,7 +556,6 @@ Module : Modélisation UML & Programmation orientée objet (C++) Outils : PlantU
    - 3.1 Diagramme de cas d'utilisation
    - 3.2 Diagramme de classes
    - 3.3 Diagramme de séquence : inscription d'un étudiant
-   - 3.4 Complément : cycle de vie d'une inscription
 4. Implémentation C++
 5. Compilation, exécution et tests
 6. Bilan
@@ -567,19 +566,15 @@ Module : Modélisation UML & Programmation orientée objet (C++) Outils : PlantU
 
 ### 3.1 Diagramme de cas d'utilisation
 <p align="center">
-<img src="01_cas_utilisation.jpeg" alt="Diagramme de cas d'utilisation" width="100%">
+<img src="c827006c-879a-4bee-8232-ceb006a04dc5.jpeg" alt="Diagramme de cas d'utilisation" width="100%">
 </p>
 
 ### 3.2 Diagramme de classes
 <p align="center">
-<img src="02_classes.jpeg" alt="Diagramme de classes" width="100%">
+<img src="d656b423-6448-4e75-ab97-e9136e499dd5.jpeg" alt="Diagramme de classes" width="100%">
 </p>
 
 ### 3.3 Diagramme de séquence : inscription d'un étudiant
 <p align="center">
-<img src="03_sequence_inscription.jpeg" alt="Diagramme de séquence" width="100%">
+<img src="2a9be7a1-b56f-4549-a2f9-bca3b7438d85.jpeg" alt="Diagramme de séquence" width="100%">
 </p>
-
-### 3.4 Complément : cycle de vie d'une inscription
-<p align="center">
-<img src="04_etats_inscription.jpeg" alt="
