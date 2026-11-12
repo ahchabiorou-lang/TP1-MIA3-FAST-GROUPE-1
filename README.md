@@ -1,6 +1,29 @@
-# TRAVAUX-DE-POO
-Résolution d'exercices et travaux dirigés.
-Exercice 1 :
+# Exercice 1 : Gestion d'une bibliothèque universitaire
+
+> Modélisation UML (cas d'utilisation et classes) et implémentation en C++.
+
+## Énoncé en bref
+
+Une bibliothèque universitaire souhaite informatiser la gestion de ses **livres**, de ses **étudiants** et des **emprunts**.
+
+- Un **livre** a un identifiant, un titre, un auteur, une année de publication et un état (disponible ou emprunté).
+- Un **étudiant** a un matricule, un nom, un prénom et une adresse électronique.
+- Un étudiant peut emprunter **plusieurs** livres, mais un livre n'est emprunté que par **un seul** étudiant à la fois.
+
+## Sommaire
+
+1. [Identification des classes](#1-identification-des-classes)
+2. [Attributs et méthodes](#2-attributs-et-méthodes)
+3. [Associations entre les classes](#3-associations-entre-les-classes)
+4. [Diagramme de cas d'utilisation](#4-diagramme-de-cas-dutilisation)
+5. [Diagramme de classes UML](#5-diagramme-de-classes-uml)
+6. [Implémentation en C++](#6-implémentation-en-c)
+7. [Programme d'emprunt et de retour](#7-programme-demprunt-et-de-retour)
+8. [Compilation et exécution](#8-compilation-et-exécution)
+9. [Notions mobilisées](#9-notions-mobilisées)
+
+---
+
 ## 1. Identification des classes
 
 | Classe | Rôle |
