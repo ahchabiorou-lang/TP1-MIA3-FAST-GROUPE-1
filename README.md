@@ -1,94 +1,191 @@
 # TRAVAUX-DE-POO
 Résolution d'exercices et travaux dirigés.
-Exercice 1 : 
-1-) Classe: 
-Livre, Etudiant, Emprunt, Bibliotheque
+Exercice 1 :
+## 1. Identification des classes
 
-2- ) Attributs et méthodes : 
+| Classe | Rôle |
+|---|---|
+| `Livre` | Un ouvrage du catalogue |
+| `Etudiant` | Un usager de la bibliothèque |
+| `Emprunt` | Classe d'association : un livre prêté à un étudiant, avec ses dates |
+| `Bibliotheque` | Classe de gestion : regroupe les livres, les étudiants et les emprunts |
+| `Etat` | Énumération : `DISPONIBLE` ou `EMPRUNTE` |
 
-Livre
-* Attributs (privés) : idLivre: int, titre: string, auteur: string, anneePublication: int, etat: Etat (DISPONIBLE / EMPRUNTE), empruntCourant: Emprunt* (nul si disponible)
-* Méthodes : constructeur, getters, estDisponible(), marquerEmprunte(), marquerDisponible(), afficher()
-Etudiant
-* Attributs (privés) : matricule: string, nom: string, prenom: string, email: string, emprunts: vector<Emprunt*>
-* Méthodes : constructeur, getters, ajouterEmprunt(), nbEmpruntsEnCours(), afficher()
-Emprunt
-* Attributs (privés) : idEmprunt: int, livre: Livre*, etudiant: Etudiant*, dateEmprunt: time_t, dateRetour: time_t
-* Méthodes : constructeur, getters, estEnCours(), cloturer(), afficher()
-Bibliotheque
-* Attributs (privés) : livres: vector<Livre*>, etudiants: vector<Etudiant*>, emprunts: vector<Emprunt*>
-* Méthodes : ajouterLivre(), ajouterEtudiant(), chercherLivre(), chercherEtudiant(), emprunterLivre(), retournerLivre(), afficherCatalogue(), afficherHistorique()
-3. Associations entre les classes
+> **Pourquoi une classe `Emprunt` ?** Un emprunt possède ses propres informations (date d'emprunt, date de retour) et un même étudiant peut emprunter plusieurs fois le même livre. L'emprunt est donc une entité à part entière, ce qui permet aussi de conserver l'**historique**.
 
-Association	Cardinalités	Type Etudiant effectue Emprunt	1 — 0..*	Association Emprunt concerne Livre	0..* — 1	Association Bibliotheque — Livre	1 — 0..*	Agrégation Bibliotheque — Etudiant	1 — 0..*	Agrégation Bibliotheque — Emprunt	1 — 0..*	Composition
+## 2. Attributs et méthodes
 
-4. Diagramme de cas d'utilisation
-                 ┌─────────── Système : Gestion de bibliothèque ──────────┐
-                 │                                                        │
-                 │   (Ajouter un livre)                                   │
-                 │   (Inscrire un étudiant)                               │
- Bibliothécaire ─┼──(Enregistrer un emprunt)──<<include>>──►(Vérifier     │
-                 │                                       disponibilité)   │
-                 │   (Enregistrer un retour)                              │
-                 │   (Consulter l'historique)                             │
-                 │                                                        │
-   Étudiant ─────┼──(Consulter le catalogue)                              │
-                 │   (Consulter ses emprunts)                             │
-                 └────────────────────────────────────────────────────────┘
-* Bibliothécaire : ajouter un livre, inscrire un étudiant, enregistrer un emprunt, enregistrer un retour, consulter l'historique.
-* Étudiant : consulter le catalogue, consulter ses emprunts.
-* Enregistrer un emprunt inclut (<<include>>) Vérifier la disponibilité : cette vérification est obligatoire à chaque emprunt.
+Tous les attributs sont **privés** (encapsulation) ; l'accès se fait par des accesseurs (*getters*) et des méthodes métier.
 
+### Livre
 
-5. Diagramme de classes UML
-┌─────────────────────────┐
-│       Bibliotheque      │
-├─────────────────────────┤
-│ - livres                │
-│ - etudiants             │
-│ - emprunts              │
-├─────────────────────────┤
-│ + ajouterLivre()        │
-│ + ajouterEtudiant()     │
-│ + emprunterLivre()      │
-│ + retournerLivre()      │
-└──◇───────◇───────◆──────┘
- 1│      1 │     1  │
-  │ 0..*   │ 0..*   │ 0..*
-  │        │        │
-Relations de Bibliotheque : ◇ vers Livre (0..*), ◇ vers Etudiant (0..*), ◆ vers Emprunt (0..*).
-┌──────────────────────┐ 1      0..* ┌──────────────────────┐
-│       Etudiant       │─────────────│       Emprunt        │
-├──────────────────────┤  effectue   ├──────────────────────┤
-│ - matricule: string  │             │ - idEmprunt: int     │
-│ - nom: string        │             │ - dateEmprunt: time_t│
-│ - prenom: string     │             │ - dateRetour: time_t │
-│ - email: string      │             ├──────────────────────┤
-├──────────────────────┤             │ + estEnCours(): bool │
-│ + ajouterEmprunt()   │             │ + cloturer(): void   │
-│ + nbEmpruntsEnCours()│             │ + afficher(): void   │
-│ + afficher(): void   │             └──────────┬───────────┘
-└──────────────────────┘                        │ 0..*
-                                                │ concerne
-                                                │ 1
-                                     ┌──────────┴──────────────┐
-                                     │          Livre          │
-                                     ├─────────────────────────┤
-                                     │ - idLivre: int          │
-                                     │ - titre: string         │
-                                     │ - auteur: string        │
-                                     │ - anneePublication: int │
-                                     │ - etat: Etat            │
-                                     ├─────────────────────────┤
-                                     │ + estDisponible(): bool │
-                                     │ + marquerEmprunte()     │
-                                     │ + marquerDisponible()   │
-                                     │ + afficher(): void      │
-                                     └─────────────────────────┘
-Note : {au plus un Emprunt en cours par Livre}.
-Les getters et constructeurs ne sont pas dessinés pour alléger. Les attributs emprunts (Etudiant) et empruntCourant (Livre) viennent des associations : en UML ils sont représentés par les liens, et ils apparaissent dans le code C++.
+| Attributs | Méthodes |
+|---|---|
+| `idLivre : int` | constructeur, accesseurs |
+| `titre : string` | `estDisponible() : bool` |
+| `auteur : string` | `marquerEmprunte(Emprunt*)` |
+| `anneePublication : int` | `marquerDisponible()` |
+| `etat : Etat` | `afficher()` |
+| `empruntCourant : Emprunt*` (nul si disponible) | |
 
-6. Implémentation C++
+### Etudiant
+
+| Attributs | Méthodes |
+|---|---|
+| `matricule : string` | constructeur, accesseurs |
+| `nom : string` | `ajouterEmprunt(Emprunt*)` |
+| `prenom : string` | `nbEmpruntsEnCours() : int` |
+| `email : string` | `afficher()` |
+| `emprunts : vector<Emprunt*>` (historique) | |
+
+### Emprunt
+
+| Attributs | Méthodes |
+|---|---|
+| `idEmprunt : int` (généré automatiquement) | constructeur, accesseurs |
+| `livre : Livre*` | `estEnCours() : bool` |
+| `etudiant : Etudiant*` | `cloturer()` (enregistre la date de retour) |
+| `dateEmprunt : time_t` | `afficher()` |
+| `dateRetour : time_t` (0 tant que le livre n'est pas rendu) | |
+
+### Bibliotheque
+
+| Attributs | Méthodes |
+|---|---|
+| `livres : vector<Livre*>` | `ajouterLivre()`, `ajouterEtudiant()` |
+| `etudiants : vector<Etudiant*>` | `chercherLivre()`, `chercherEtudiant()` |
+| `emprunts : vector<Emprunt*>` | `emprunterLivre()`, `retournerLivre()` |
+| | `afficherCatalogue()`, `afficherHistorique()` |
+
+## 3. Associations entre les classes
+
+| Association | Cardinalités | Type |
+|---|---|---|
+| `Etudiant` **effectue** `Emprunt` | 1 — 0..\* | Association |
+| `Livre` **concerne** `Emprunt` | 1 — 0..\* | Association |
+| `Bibliotheque` — `Livre` | 1 — 0..\* | Agrégation |
+| `Bibliotheque` — `Etudiant` | 1 — 0..\* | Agrégation |
+| `Bibliotheque` — `Emprunt` | 1 — 0..\* | Composition |
+| `Livre` — `Etat` | 1 — 1 | Dépendance |
+
+**Contrainte métier :** pour un livre donné, il y a **au plus un emprunt en cours** à la fois (`dateRetour` vide). Elle traduit la phrase de l'énoncé « un livre ne peut être emprunté que par un seul étudiant à la fois ». Un étudiant, lui, peut avoir plusieurs emprunts en cours.
+
+## 4. Diagramme de cas d'utilisation
+
+```mermaid
+flowchart LR
+    bib["«acteur»<br/>Bibliothécaire"]
+    etu["«acteur»<br/>Étudiant"]
+
+    subgraph SYS["Système de gestion de la bibliothèque universitaire"]
+        UC1(["Ajouter un livre au catalogue"])
+        UC2(["Inscrire un étudiant"])
+        UC3(["Enregistrer un emprunt"])
+        UC4(["Enregistrer un retour"])
+        UC5(["Consulter l'historique des emprunts"])
+        UC6(["Consulter le catalogue des livres"])
+        UC7(["Consulter ses emprunts en cours"])
+        UC8(["Vérifier la disponibilité du livre"])
+    end
+
+    bib --- UC1
+    bib --- UC2
+    bib --- UC3
+    bib --- UC4
+    bib --- UC5
+    etu --- UC6
+    etu --- UC7
+    UC3 -. "«include»" .-> UC8
+
+    classDef acteur fill:#FFF1CC,stroke:#A15C07,color:#14213D
+    class bib,etu acteur
+```
+
+**Lecture du diagramme**
+
+- Le **bibliothécaire** gère le catalogue, les étudiants, les emprunts et les retours.
+- L'**étudiant** consulte le catalogue et ses propres emprunts.
+- *Enregistrer un emprunt* **inclut** (`«include»`) *Vérifier la disponibilité du livre* : cette vérification est obligatoire à chaque emprunt.
+
+## 5. Diagramme de classes UML
+
+```mermaid
+classDiagram
+    class Etat {
+        <<enumeration>>
+        DISPONIBLE
+        EMPRUNTE
+    }
+
+    class Livre {
+        -idLivre : int
+        -titre : string
+        -auteur : string
+        -anneePublication : int
+        -etat : Etat
+        +estDisponible() bool
+        +marquerEmprunte(e : Emprunt) void
+        +marquerDisponible() void
+        +afficher() void
+    }
+
+    class Etudiant {
+        -matricule : string
+        -nom : string
+        -prenom : string
+        -email : string
+        +ajouterEmprunt(e : Emprunt) void
+        +nbEmpruntsEnCours() int
+        +afficher() void
+    }
+
+    class Emprunt {
+        -idEmprunt : int
+        -dateEmprunt : time_t
+        -dateRetour : time_t
+        +estEnCours() bool
+        +cloturer() void
+        +afficher() void
+    }
+
+    class Bibliotheque {
+        -livres : vector~Livre~
+        -etudiants : vector~Etudiant~
+        -emprunts : vector~Emprunt~
+        +ajouterLivre(l : Livre) void
+        +ajouterEtudiant(e : Etudiant) void
+        +chercherLivre(idLivre : int) Livre
+        +chercherEtudiant(matricule : string) Etudiant
+        +emprunterLivre(matricule : string, idLivre : int) bool
+        +retournerLivre(idLivre : int) bool
+    }
+
+    Etudiant "1" -- "0..*" Emprunt : effectue
+    Livre "1" -- "0..*" Emprunt : concerne
+    Livre ..> Etat : utilise
+    Bibliotheque "1" o-- "0..*" Livre
+    Bibliotheque "1" o-- "0..*" Etudiant
+    Bibliotheque "1" *-- "0..*" Emprunt
+
+    note for Emprunt "Contrainte : un livre a au plus un emprunt en cours (dateRetour vide)"
+```
+
+**Lecture du diagramme**
+
+- `Emprunt` est la classe d'association : elle relie un `Etudiant` et un `Livre`.
+- Les cardinalités traduisent l'énoncé : un étudiant a **0..\*** emprunts, un livre apparaît dans **0..\*** emprunts au fil du temps, mais un seul est en cours.
+- Losange vide : agrégation. Losange plein : composition (la bibliothèque crée et détruit les emprunts).
+- En C++, les références entre classes (`Emprunt`, `Livre`, `Etudiant`) sont des **pointeurs**. Le diagramme les montre par les liens, sans le symbole `*`.
+
+## 6. Implémentation en C++
+
+Le programme tient dans un seul fichier, `main.cpp`. Il n'utilise que la bibliothèque standard : `iostream`, `string`, `vector`, `ctime`.
+
+```cpp
+// =====================================================================
+// Exercice 1 : Gestion d'une bibliotheque universitaire
+// Classes : Livre, Etudiant, Emprunt, Bibliotheque (+ enumeration Etat)
+// =====================================================================
 #include <iostream>
 #include <string>
 #include <vector>
@@ -109,10 +206,9 @@ private:
     string auteur;
     int anneePublication;
     Etat etat;
-    Emprunt* empruntCourant;   // nullptr si disponible
+    Emprunt* empruntCourant;   // nullptr si le livre est disponible
 public:
-    Livre(int idLivre, const string& titre, const string& auteur,
-          int anneePublication)
+    Livre(int idLivre, const string& titre, const string& auteur, int anneePublication)
         : idLivre(idLivre), titre(titre), auteur(auteur),
           anneePublication(anneePublication),
           etat(Etat::DISPONIBLE), empruntCourant(nullptr) {}
@@ -135,7 +231,7 @@ public:
         empruntCourant = nullptr;
     }
 
-    void afficher() const;   // défini après Emprunt
+    void afficher() const;   // defini apres Emprunt
 };
 
 // ======================= Etudiant =======================
@@ -145,7 +241,7 @@ private:
     string nom;
     string prenom;
     string email;
-    vector<Emprunt*> emprunts;   // historique de l'étudiant
+    vector<Emprunt*> emprunts;   // historique des emprunts de l'etudiant
 public:
     Etudiant(const string& matricule, const string& nom,
              const string& prenom, const string& email)
@@ -158,14 +254,14 @@ public:
 
     void ajouterEmprunt(Emprunt* e) { emprunts.push_back(e); }
 
-    int nbEmpruntsEnCours() const;   // défini après Emprunt
-    void afficher() const;           // défini après Emprunt
+    int nbEmpruntsEnCours() const;   // defini apres Emprunt
+    void afficher() const;           // defini apres Emprunt
 };
 
 // ======================= Emprunt =======================
 class Emprunt {
 private:
-    static int compteur;     // génère les identifiants automatiquement
+    static int compteur;     // genere les identifiants automatiquement
     int idEmprunt;
     Livre* livre;
     Etudiant* etudiant;
@@ -201,7 +297,7 @@ public:
 };
 int Emprunt::compteur = 0;
 
-// ============ Définitions différées (Emprunt est complet) ============
+// ============ Definitions differees (Emprunt est maintenant complet) ============
 void Livre::afficher() const {
     cout << "[" << idLivre << "] " << titre << " de " << auteur
          << " (" << anneePublication << ") - ";
@@ -235,8 +331,8 @@ private:
     vector<Emprunt*> emprunts;
 public:
     Bibliotheque() = default;
-    Bibliotheque(const Bibliotheque&) = delete;             // évite la double
-    Bibliotheque& operator=(const Bibliotheque&) = delete;  // libération mémoire
+    Bibliotheque(const Bibliotheque&) = delete;             // evite la double
+    Bibliotheque& operator=(const Bibliotheque&) = delete;  // liberation memoire
 
     ~Bibliotheque() {
         for (auto l : livres) delete l;
@@ -328,7 +424,7 @@ int main() {
 
     cout << "\n=== Retours ===\n";
     bib.retournerLivre(1);           // OK
-    bib.retournerLivre(3);           // refuse : non emprunte
+    bib.retournerLivre(3);           // refuse : livre non emprunte
     bib.emprunterLivre("M002", 1);   // OK : le livre est de nouveau disponible
 
     cout << "\n";
@@ -339,23 +435,81 @@ int main() {
     bib.chercherEtudiant("M001")->afficher();
     return 0;
 }
+```
 
+**Points importants du code**
 
-7. Programme d'emprunt et de retour : principe
-Emprunter (emprunterLivre) :
-1. Chercher l'étudiant et le livre ; sinon, erreur.
-2. Vérifier estDisponible() ; sinon, refus.
-3. Créer un Emprunt, l'enregistrer dans la bibliothèque et chez l'étudiant, puis appeler marquerEmprunte() sur le livre.
-Retourner (retournerLivre) :
-1. Chercher le livre ; sinon, erreur.
-2. Vérifier qu'il est bien emprunté ; sinon, erreur.
-3. Récupérer empruntCourant, appeler cloturer() (date de retour), puis marquerDisponible().
+- **Encapsulation :** tous les attributs sont privés.
+- **Constructeurs :** `Livre` s'initialise `DISPONIBLE` avec `empruntCourant` à `nullptr` ; `Emprunt` génère son identifiant avec un compteur statique.
+- **Déclarations anticipées :** `class Livre; class Etudiant; class Emprunt;` permettent aux classes de se référencer avant d'être complètement définies. Les méthodes qui ont besoin d'`Emprunt` sont définies après lui.
+- **Gestion de la mémoire :** `Bibliotheque` crée les objets avec `new` et les libère dans son destructeur. La copie est interdite (`= delete`) pour éviter une double libération.
 
+## 7. Programme d'emprunt et de retour
 
-8. Notions mobilisées
-* Classes et objets : 4 classes, instanciées dynamiquement dans main.
-* Attributs et méthodes : tous les attributs de l'énoncé sont présents (identifiant, titre, auteur, année, état pour le livre ; matricule, nom, prénom, email pour l'étudiant).
-* Constructeurs : initialisent l'état à DISPONIBLE, empruntCourant à nullptr, et Emprunt génère son idEmprunt via un compteur statique.
-* Encapsulation : attributs privés, accès par getters et méthodes métier (marquerEmprunte, cloturer).
-* Associations et cardinalités : Etudiant 1—0..* Emprunt, Livre 1—0..* Emprunt, avec la contrainte « un seul emprunt en cours par livre » garantie par le test estDisponible().
-* Agrégation / composition : la bibliothèque agrège livres et étudiants, et compose les emprunts. Son destructeur libère toute la mémoire, et la copie est interdite (= delete).
+La logique se trouve dans les méthodes de `Bibliotheque`.
+
+**Emprunter un livre** (`emprunterLivre`)
+
+1. Chercher l'étudiant et le livre ; sinon, afficher une erreur.
+2. Vérifier `estDisponible()` ; sinon, refuser l'emprunt.
+3. Créer un `Emprunt`, l'enregistrer dans la bibliothèque et chez l'étudiant, puis appeler `marquerEmprunte()` sur le livre.
+
+**Retourner un livre** (`retournerLivre`)
+
+1. Chercher le livre ; sinon, afficher une erreur.
+2. Vérifier qu'il est bien emprunté ; sinon, afficher une erreur.
+3. Récupérer `empruntCourant`, appeler `cloturer()` (date de retour), puis `marquerDisponible()`.
+
+**Exemple d'exécution** (les dates affichées dépendent du jour d'exécution) :
+
+```text
+=== Emprunts ===
+Aminata Diallo a emprunte "Algorithmique".
+Aminata Diallo a emprunte "Le langage C++".
+Erreur : "Algorithmique" est deja emprunte.
+Erreur : etudiant ou livre introuvable.
+--- Catalogue ---
+[1] Algorithmique de Cormen (2009) - emprunte par M001
+[2] Le langage C++ de Stroustrup (2013) - emprunte par M001
+[3] Analyse numerique de Burden (2010) - disponible
+
+=== Retours ===
+Aminata Diallo a retourne "Algorithmique".
+Erreur : "Analyse numerique" n'est pas emprunte.
+Moussa Traore a emprunte "Algorithmique".
+
+--- Catalogue ---
+[1] Algorithmique de Cormen (2009) - emprunte par M002
+[2] Le langage C++ de Stroustrup (2013) - emprunte par M001
+[3] Analyse numerique de Burden (2010) - disponible
+
+--- Historique des emprunts ---
+Emprunt n°1 : "Algorithmique" par M001, emprunte le 12/11/2026 - rendu le 12/11/2026
+Emprunt n°2 : "Le langage C++" par M001, emprunte le 12/11/2026 - en cours
+Emprunt n°3 : "Algorithmique" par M002, emprunte le 12/11/2026 - en cours
+
+Etudiant M001 : Aminata Diallo <a.diallo@univ.edu>
+  Emprunt n°1 : "Algorithmique" par M001, emprunte le 12/11/2026 - rendu le 12/11/2026
+  Emprunt n°2 : "Le langage C++" par M001, emprunte le 12/11/2026 - en cours
+```
+
+Le scénario du `main` montre les cas normaux (plusieurs livres pour un étudiant, retour puis nouvel emprunt du même livre) et les cas d'erreur (livre déjà emprunté, étudiant inconnu, retour d'un livre non emprunté).
+
+## 8. Compilation et exécution
+
+```bash
+g++ -std=c++11 main.cpp -o bibliotheque
+./bibliotheque        # sous Windows : bibliotheque.exe
+```
+
+## 9. Notions mobilisées
+
+| Notion | Où on la retrouve |
+|---|---|
+| Classes et objets | `Livre`, `Etudiant`, `Emprunt`, `Bibliotheque` instanciés dans `main` |
+| Attributs et méthodes | Tableaux de la section 2 |
+| Constructeurs | Initialisation de l'état, de `empruntCourant` et de `idEmprunt` |
+| Encapsulation | Attributs privés, accès par accesseurs et méthodes métier |
+| Associations entre classes | `Etudiant`—`Emprunt`—`Livre`, implémentées par des pointeurs |
+| Cardinalités UML | 1 — 0..\* et la contrainte « un seul emprunt en cours par livre » |
+| Agrégation et composition | `Bibliotheque` agrège livres et étudiants, et compose les emprunts |
