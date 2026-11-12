@@ -602,19 +602,124 @@ Au début de chaque année académique, les étudiants doivent effectuer différ
 <p align="center">
 <img src="c827006c-879a-4bee-8232-ceb006a04dc5.jpeg" alt="Diagramme de cas d'utilisation" width="100%">
 </p>
+<details>
+<summary><b>Voir le code PlantUML</b></summary>
 
-### 3.2 Diagramme de classes
+```text
+@startuml cas_utilisation
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam ranksep 20
+
+actor "Agent de scolarité" as Agent
+actor "Chef de scolarité" as Chef
+actor "Étudiant" as Etu
+Agent <-- Chef
+
+rectangle "Système de gestion des inscriptions" {
+  usecase "Consulter la liste des inscrits" as UC7
+  usecase "Inscriptions par année" as UC8
+  usecase "Enregistrer un étudiant" as UC1
+  usecase "Enregistrer une inscription" as UC2
+  usecase "Générer l'attestation" as UC9
+  usecase "Gérer les filières / annuler" as UC11
+  usecase "Associer filière et niveau" as UC3
+  usecase "Vérifier si déjà inscrit" as UC4
+  usecase "Rechercher par matricule" as UC5
+  usecase "Payer les frais" as UC6
+  usecase "Emprunter un ouvrage" as UC10
+}
+
+Agent --> UC7
+Agent --> UC8
+Agent --> UC1
+Agent --> UC2
+Agent --> UC9
+Chef --> UC11
+
+UC2 ..> UC3 : <<include>>
+UC2 ..> UC4 : <<include>>
+UC2 ..> UC5 : <<include>>
+UC9 ..> UC5 : <<include>>
+UC2 <.. UC6 : <<extend>>
+UC4 <.. UC10 : <<include>>
+UC6 <-- Etu
+UC10 <-- Etu
+@enduml
+
+</details>
+3.2 Diagramme de classes
 <p align="center">
 <img src="d656b423-6448-4e75-ab97-e9136e499dd5.jpeg" alt="Diagramme de classes" width="100%">
 </p>
+<details>
+<summary><b>Voir le code PlantUML</b></summary>
+@startuml classes
+skinparam classAttributeIconSize 0
+hide empty members
 
-### 3.3 Diagramme de séquence : inscription d'un étudiant
+class Scolarite {
+  + enregistrerEtudiant(...)
+  + rechercherParMatricule(mat)
+  + inscrire(mat, filiere, niveau, annee)
+  + enregistrerPaiement(id, montant)
+  + estDejaInscrit(mat, annee)
+}
+
+class Etudiant {
+  matricule: string
+  nom: string
+  prenoms: string
+}
+
+class Inscription {
+  id: string
+  montantDu: double
+  montantPaye: double
+}
+
+class Filiere {
+  code: string
+  libelle: string
+  fraisInscription: double
+}
+
+Scolarite "1" o-- "*" Etudiant
+Scolarite "1" o-- "*" Filiere
+Scolarite "1" *-- "*" Inscription
+Etudiant "1" --> "*" Inscription : effectue >
+Inscription "*" --> "1" Filiere : dans >
+@enduml
+
+
+</details>
+3.3 Diagramme de séquence : inscription d'un étudiant
 <p align="center">
 <img src="2a9be7a1-b56f-4549-a2f9-bca3b7438d85.jpeg" alt="Diagramme de séquence" width="100%">
 </p>
+<details>
+<summary><b>Voir le code PlantUML</b></summary>
 
----
+@startuml sequence_inscription
+autonumber
+actor "Agent" as agent
+boundary "Interface" as ui
+control "Scolarite" as sc
+entity "Filiere" as fil
+entity "Inscription" as ins
 
-## 4. Bilan
-* Modélisation UML complète et conforme aux spécifications de l'énoncé.
-* Analyse rigoureuse des acteurs et des règles de gestion du système de sc
+agent -> ui : saisit infos inscription
+ui -> sc : inscrire(...)
+sc -> fil : proposeNiveau()
+fil --> sc : vrai/faux
+sc -> ins : <<create>>
+sc --> ui : succès / erreur
+ui --> agent : affiche le résultat
+@enduml
+
+</details>
+4. Bilan
+Puce Modélisation UML complète et conforme aux spécifications de l'énoncé.
+Puce Analyse rigoureuse des acteurs et des règles de gestion du système de scolarité.
+
