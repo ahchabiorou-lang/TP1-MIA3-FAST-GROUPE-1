@@ -10,6 +10,14 @@ Une bibliothèque universitaire souhaite informatiser la gestion de ses **livres
 - Un **étudiant** a un matricule, un nom, un prénom et une adresse électronique.
 - Un étudiant peut emprunter **plusieurs** livres, mais un livre n'est emprunté que par **un seul** étudiant à la fois.
 
+## Contenu du dépôt
+
+```text
+.
+├── README.md    (ce document : analyse, diagrammes, explications)
+└── main.cpp     (programme C++ complet)
+```
+
 ## Sommaire
 
 1. [Identification des classes](#1-identification-des-classes)
@@ -82,23 +90,19 @@ Tous les attributs sont **privés** (encapsulation) ; l'accès se fait par des a
 
 ## 3. Associations entre les classes
 
-| Association | Cardinalités | Type |
-|---|---|---|
-| `Etudiant` **effectue** `Emprunt` | 1 — 0..\* | Association |
-| `Livre` **concerne** `Emprunt` | 1 — 0..\* | Association |
-| `Bibliotheque` — `Livre` | 1 — 0..\* | Agrégation |
-| `Bibliotheque` — `Etudiant` | 1 — 0..\* | Agrégation |
-| `Bibliotheque` — `Emprunt` | 1 — 0..\* | Composition |
-| `Livre` — `Etat` | 1 — 1 | Dépendance |
+- **Etudiant 1 — 0..\* Emprunt** : un étudiant effectue zéro ou plusieurs emprunts ; un emprunt est effectué par un seul étudiant.
+- **Livre 1 — 0..\* Emprunt** : un livre peut figurer dans plusieurs emprunts au fil du temps ; un emprunt concerne un seul livre.
+- **Bibliotheque ◇ Livre** et **Bibliotheque ◇ Etudiant** (1 — 0..\*) : agrégation.
+- **Bibliotheque ◆ Emprunt** (1 — 0..\*) : composition.
+- **Livre ┈> Etat** : dépendance (l'état est une énumération).
 
-**Contrainte métier :** pour un livre donné, il y a **au plus un emprunt en cours** à la fois (`dateRetour` vide). Elle traduit la phrase de l'énoncé « un livre ne peut être emprunté que par un seul étudiant à la fois ». Un étudiant, lui, peut avoir plusieurs emprunts en cours.
+> **Contrainte métier :** un livre a **au plus un emprunt en cours** à la fois (`dateRetour` vide). Elle traduit la phrase de l'énoncé « un livre ne peut être emprunté que par un seul étudiant à la fois ». Un étudiant, lui, peut avoir plusieurs emprunts en cours.
 
 ## 4. Diagramme de cas d'utilisation
 
 ```mermaid
 flowchart LR
     bib["«acteur»<br/>Bibliothécaire"]
-    etu["«acteur»<br/>Étudiant"]
 
     subgraph SYS["Système de gestion de la bibliothèque universitaire"]
         UC1(["Ajouter un livre au catalogue"])
@@ -106,22 +110,25 @@ flowchart LR
         UC3(["Enregistrer un emprunt"])
         UC4(["Enregistrer un retour"])
         UC5(["Consulter l'historique des emprunts"])
+        UC8(["Vérifier la disponibilité du livre"])
         UC6(["Consulter le catalogue des livres"])
         UC7(["Consulter ses emprunts en cours"])
-        UC8(["Vérifier la disponibilité du livre"])
     end
+
+    etu["«acteur»<br/>Étudiant"]
 
     bib --- UC1
     bib --- UC2
     bib --- UC3
     bib --- UC4
     bib --- UC5
-    etu --- UC6
-    etu --- UC7
     UC3 -. "«include»" .-> UC8
+    UC6 --- etu
+    UC7 --- etu
 
     classDef acteur fill:#FFF1CC,stroke:#A15C07,color:#14213D
     class bib,etu acteur
+    style SYS fill:transparent,stroke:#888
 ```
 
 **Lecture du diagramme**
@@ -129,6 +136,24 @@ flowchart LR
 - Le **bibliothécaire** gère le catalogue, les étudiants, les emprunts et les retours.
 - L'**étudiant** consulte le catalogue et ses propres emprunts.
 - *Enregistrer un emprunt* **inclut** (`«include»`) *Vérifier la disponibilité du livre* : cette vérification est obligatoire à chaque emprunt.
+
+<details>
+<summary>Version texte du diagramme (si l'image ne s'affiche pas)</summary>
+
+```text
+Acteur : Bibliothécaire
+  ── Ajouter un livre au catalogue
+  ── Inscrire un étudiant
+  ── Enregistrer un emprunt ┈«include»┈> Vérifier la disponibilité du livre
+  ── Enregistrer un retour
+  ── Consulter l'historique des emprunts
+
+Acteur : Étudiant
+  ── Consulter le catalogue des livres
+  ── Consulter ses emprunts en cours
+```
+
+</details>
 
 ## 5. Diagramme de classes UML
 
@@ -199,6 +224,22 @@ classDiagram
 - Les cardinalités traduisent l'énoncé : un étudiant a **0..\*** emprunts, un livre apparaît dans **0..\*** emprunts au fil du temps, mais un seul est en cours.
 - Losange vide : agrégation. Losange plein : composition (la bibliothèque crée et détruit les emprunts).
 - En C++, les références entre classes (`Emprunt`, `Livre`, `Etudiant`) sont des **pointeurs**. Le diagramme les montre par les liens, sans le symbole `*`.
+
+<details>
+<summary>Version texte des relations (si l'image ne s'affiche pas)</summary>
+
+```text
+Etudiant      1 ────── 0..*  Emprunt        (effectue)
+Livre         1 ────── 0..*  Emprunt        (concerne)
+Bibliotheque  1 ◇───── 0..*  Livre          (agrégation)
+Bibliotheque  1 ◇───── 0..*  Etudiant       (agrégation)
+Bibliotheque  1 ◆───── 0..*  Emprunt        (composition)
+Livre         ┈┈┈>  Etat    (énumération : DISPONIBLE, EMPRUNTE)
+
+Contrainte : un livre a au plus un emprunt en cours.
+```
+
+</details>
 
 ## 6. Implémentation en C++
 
