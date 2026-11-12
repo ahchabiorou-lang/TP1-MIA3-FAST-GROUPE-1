@@ -541,20 +541,45 @@ g++ -std=c++11 main.cpp -o bibliotheque
 Module : Modélisation UML & Programmation orientée objet (C++) Outils : PlantUML (modélisation) · C++ (implémentation) · Fichiers CSV (persistance)
 
 <h1 align="center">TP 1 - Application de gestion des inscriptions universitaires</h1>
-
 <p align="center">
-<img src="01_cas_utilisation.png" alt="Diagramme de cas d'utilisation" width="100%">
+<img src="https://img.shields.io/badge/C%2B%2B-20-00599C?logo=cplusplus&logoColor=white" alt="C++20">
+<img src="https://img.shields.io/badge/UML-PlantUML-2F6FAD" alt="PlantUML">
+<img src="https://img.shields.io/badge/persistance-CSV-6c757d" alt="CSV">
 </p>
 
+<p align="center"><b>Modélisation UML (PlantUML) et implémentation en C++</b></p>
+
+## Sommaire
+1. Énoncé
+2. Analyse du besoin
+3. Modélisation UML
+   - 3.1 Diagramme de cas d'utilisation
+   - 3.2 Diagramme de classes
+   - 3.3 Diagramme de séquence : inscription d'un étudiant
+   - 3.4 Complément : cycle de vie d'une inscription
+4. Implémentation C++
+5. Compilation, exécution et tests
+6. Bilan
+
+---
+
+## 3. Modélisation UML
+
+### 3.1 Diagramme de cas d'utilisation
 <p align="center">
-<img src="02_classes.png" alt="Diagramme de classes" width="100%">
+<img src="01_cas_utilisation.jpeg" alt="Diagramme de cas d'utilisation" width="100%">
 </p>
 
+### 3.2 Diagramme de classes
 <p align="center">
-<img src="03_sequence_inscription.png" alt="Diagramme de séquence" width="100%">
+<img src="02_classes.jpeg" alt="Diagramme de classes" width="100%">
 </p>
 
+### 3.3 Diagramme de séquence : inscription d'un étudiant
 <p align="center">
-<img src="04_etats_inscription.png" alt="Diagramme d'états" width="100%">
+<img src="03_sequence_inscription.jpeg" alt="Diagramme de séquence" width="100%">
 </p>
 
+### 3.4 Complément : cycle de vie d'une inscription
+<p align="center">
+<img src="04_etats_inscription.jpeg" alt="
