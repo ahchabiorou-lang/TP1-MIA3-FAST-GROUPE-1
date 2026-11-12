@@ -543,11 +543,11 @@ Module : Modélisation UML & Programmation orientée objet (C++) Outils : PlantU
 
 <h1 align="center">TP 1 - Application de gestion des inscriptions universitaires</h1>
 <p align="center">
-<img src="[https://img.shields.io/badge/C%2B%2B-20-00599C?logo=cplusplus&logoColor=white](https://img.shields.io/badge/C%2B%2B-20-00599C?logo=cplusplus&logoColor=white)" alt="C++20">
-<img src="[https://img.shields.io/badge/UML-PlantUML-2F6FAD](https://img.shields.io/badge/UML-PlantUML-2F6FAD)" alt="PlantUML">
-<img src="[https://img.shields.io/badge/persistance-CSV-6c757d](https://img.shields.io/badge/persistance-CSV-6c757d)" alt="CSV">
+<img src="https://img.shields.io/badge/C%2B%2B-20-00599C?logo=cplusplus&logoColor=white" alt="C++20">
+<img src="https://img.shields.io/badge/UML-PlantUML-2F6FAD" alt="PlantUML">
+<img src="https://img.shields.io/badge/persistance-CSV-6c757d" alt="CSV">
 </p>
-<p align="center"><b>Modélisation UML et Analyse du besoin</b></p>
+<p align="center"><b>Modélisation UML, Analyse du besoin et Implémentation Bonus</b></p>
 
 ## Sommaire
 1. Énoncé
@@ -556,7 +556,8 @@ Module : Modélisation UML & Programmation orientée objet (C++) Outils : PlantU
    - 3.1 Diagramme de cas d'utilisation
    - 3.2 Diagramme de classes
    - 3.3 Diagramme de séquence : inscription d'un étudiant
-4. Bilan
+4. Implémentation C++ (Bonus)
+5. Bilan
 
 ---
 
@@ -604,12 +605,16 @@ Au début de chaque année académique, les étudiants doivent effectuer différ
 <img src="c827006c-879a-4bee-8232-ceb006a04dc5.jpeg" alt="Diagramme de cas d'utilisation" width="100%">
 </p>
 
+*Ce diagramme présente les interactions entre les acteurs (Agent, Chef de scolarité, Étudiant) et les fonctionnalités principales du système, en mettant en évidence les relations d'inclusion (`<<include>>`) et d'extension (`<<extend>>`).*
+
 ---
 
 ### 3.2 Diagramme de classes
 <p align="center">
 <img src="d656b423-6448-4e75-ab97-e9136e499dd5.jpeg" alt="Diagramme de classes" width="100%">
 </p>
+
+*Ce diagramme structure l'architecture orientée objet de l'application en définissant les classes principales (`Scolarite`, `Etudiant`, `Inscription`, `Filiere`, `Emprunt`), leurs attributs, leurs méthodes et leurs relations d'association ou de composition.*
 
 ---
 
@@ -618,10 +623,14 @@ Au début de chaque année académique, les étudiants doivent effectuer différ
 <img src="2a9be7a1-b56f-4549-a2f9-bca3b7438d85.jpeg" alt="Diagramme de séquence" width="100%">
 </p>
 
+*Ce diagramme détaille l'ordre chronologique des échanges de messages entre les objets lors du cas d'utilisation central de l'inscription d'un étudiant, incluant les contrôles de validité et la gestion des erreurs.*
+
 ---
 
-## 4. Bilan
-* Modélisation UML complète et conforme aux spécifications de l'énoncé.
-* Analyse rigoureuse des acteurs et des règles de gestion du système de scolarité.
-
-
+## 4. Implémentation C++ (Bonus)
+* **Architecture :** Traduction directe du diagramme de classes en C++20 (`std::optional`, `enum class`, encapsulation stricte).
+* **Compilation et tests :**
+```bash
+cmake -S . -B build
+cmake --build build
+./build/tests          # Validation par tests unitaires
