@@ -539,14 +539,14 @@ g++ -std=c++11 main.cpp -o bibliotheque
 
 🎓 TP 1 — Application de gestion des inscriptions universitaires
 Module : Modélisation UML & Programmation orientée objet (C++) Outils : PlantUML (modélisation) · C++ (implémentation) · Fichiers CSV (persistance)
+
 <h1 align="center">TP 1 - Application de gestion des inscriptions universitaires</h1>
 <p align="center">
 <img src="https://img.shields.io/badge/C%2B%2B-20-00599C?logo=cplusplus&logoColor=white" alt="C++20">
 <img src="https://img.shields.io/badge/UML-PlantUML-2F6FAD" alt="PlantUML">
 <img src="https://img.shields.io/badge/persistance-CSV-6c757d" alt="CSV">
-<img src="https://img.shields.io/badge/tests-69%20r%C3%A9ussis-2ea44f" alt="tests">
 </p>
-<p align="center"><b>Modélisation UML (PlantUML) et implémentation en C++</b></p>
+<p align="center"><b>Modélisation UML et Analyse du besoin</b></p>
 
 ## Sommaire
 1. Énoncé
@@ -555,46 +555,44 @@ Module : Modélisation UML & Programmation orientée objet (C++) Outils : PlantU
    - 3.1 Diagramme de cas d'utilisation
    - 3.2 Diagramme de classes
    - 3.3 Diagramme de séquence : inscription d'un étudiant
-4. Implémentation C++
-5. Compilation, exécution et tests
-6. Bilan
+4. Bilan
 
 ---
 
 ## 1. Énoncé
-Au début de chaque année académique, les étudiants doivent effectuer différentes démarches d'inscription : identification, choix de filière, choix de niveau et paiement des frais[span_16](start_span)[span_16](end_span). Un service de scolarité souhaite disposer d'une application pour faciliter le suivi de ces inscriptions[span_17](start_span)[span_17](end_span).
+Au début de chaque année académique, les étudiants doivent effectuer différentes démarches d'inscription : identification, choix de filière, choix de niveau et paiement des frais. Un service de scolarité souhaite disposer d'une application pour faciliter le suivi de ces inscriptions.
 
 **Fonctionnalités attendues :**
-* Enregistrer une inscription académique[span_18](start_span)[span_18](end_span)[span_19](start_span)[span_19](end_span)
-* Associer un étudiant à une filière et à un niveau[span_20](start_span)[span_20](end_span)[span_21](start_span)[span_21](end_span)
-* Vérifier si un étudiant est déjà inscrit[span_22](start_span)[span_22](end_span)[span_23](start_span)[span_23](end_span)
-* Consulter la liste des étudiants inscrits[span_24](start_span)[span_24](end_span)[span_25](start_span)[span_25](end_span)
-* Rechercher un étudiant par matricule[span_26](start_span)[span_26](end_span)[span_27](start_span)[span_27](end_span)
-* Afficher les inscriptions par année académique[span_28](start_span)[span_28](end_span)[span_29](start_span)[span_29](end_span)
+* Enregistrer une inscription académique
+* Associer un étudiant à une filière et à un niveau
+* Vérifier si un étudiant est déjà inscrit
+* Consulter la liste des étudiants inscrits
+* Rechercher un étudiant par matricule
+* Afficher les inscriptions par année académique
 
-**Modélisation demandée :** diagramme de cas d'utilisation, diagramme de classes, diagramme de séquence de l'inscription[span_30](start_span)[span_30](end_span)[span_31](start_span)[span_31](end_span).
-**Classes envisageables :** Etudiant, Inscription, Filiere, Niveau, AnneeAcademique, Scolarite, + Emprunt (consigne complémentaire)[span_32](start_span)[span_32](end_span)[span_33](start_span)[span_33](end_span).
-**Extensions :** sauvegarde des données dans des fichiers et génération d'une attestation d'inscription[span_34](start_span)[span_34](end_span)[span_35](start_span)[span_35](end_span).
+**Modélisation demandée :** diagramme de cas d'utilisation, diagramme de classes, diagramme de séquence de l'inscription.
+**Classes envisageables :** Etudiant, Inscription, Filiere, Niveau, AnneeAcademique, Scolarite, + Emprunt.
+**Extensions :** sauvegarde des données dans des fichiers et génération d'une attestation d'inscription.
 
 ---
 
 ## 2. Analyse du besoin
 
 ### 2.1 Acteurs
-* **Agent de scolarité (Principal) :** Saisit les étudiants et les inscriptions, consulte les listes, délivre les attestations[span_36](start_span)[span_36](end_span).
-* **Chef de scolarité (Principal - spécialise l'agent) :** Peut en plus gérer les filières et annuler une inscription[span_37](start_span)[span_37](end_span).
-* **Étudiant (Secondaire) :** Paie ses frais et emprunte des ouvrages ; il ne manipule pas directement l'application[span_38](start_span)[span_38](end_span).
+* **Agent de scolarité (Principal) :** Saisit les étudiants et les inscriptions, consulte les listes, délivre les attestations.
+* **Chef de scolarité (Principal - spécialise l'agent) :** Peut en plus gérer les filières et annuler une inscription.
+* **Étudiant (Secondaire) :** Paie ses frais et emprunte des ouvrages ; il ne manipule pas directement l'application.
 
 ### 2.2 Règles de gestion
-* **RG1 :** Chaque étudiant est identifié par un matricule unique généré automatiquement (`ETU2026-0001`)[span_39](start_span)[span_39](end_span)[span_40](start_span)[span_40](end_span).
-* **RG2 :** Une inscription associe un étudiant, une filière, un niveau et une année académique[span_41](start_span)[span_41](end_span)[span_42](start_span)[span_42](end_span).
-* **RG3 :** Un étudiant ne peut avoir qu'une seule inscription active par année académique (contrôle de doublon)[span_43](start_span)[span_43](end_span).
-* **RG4 :** Le niveau choisi doit être ouvert dans la filière (ex. la filière MSI n'ouvre que M1 et M2)[span_44](start_span)[span_44](end_span).
-* **RG5 :** Le montant dû correspond aux frais de la filière au jour de l'inscription ; le paiement peut se faire en plusieurs versements, sans jamais dépasser le reste à payer[span_45](start_span)[span_45](end_span).
-* **RG6 :** Une inscription est validée quand les frais sont intégralement payés, et annulée sur décision du chef de scolarité[span_46](start_span)[span_46](end_span).
-* **RG7 :** L'attestation d'inscription n'est délivrée que pour une inscription validée[span_47](start_span)[span_47](end_span).
-* **RG8 :** Seul un étudiant ayant une inscription validée pour l'année en cours peut emprunter un ouvrage[span_48](start_span)[span_48](end_span).
-* **RG9 :** Un emprunt dure 14 jours, avec au maximum 3 emprunts en cours par étudiant et dans la limite des exemplaires disponibles[span_49](start_span)[span_49](end_span).
+* **RG1 :** Chaque étudiant est identifié par un matricule unique généré automatiquement (`ETU2026-0001`).
+* **RG2 :** Une inscription associe un étudiant, une filière, un niveau et une année académique.
+* **RG3 :** Un étudiant ne peut avoir qu'une seule inscription active par année académique.
+* **RG4 :** Le niveau choisi doit être ouvert dans la filière.
+* **RG5 :** Le montant dû correspond aux frais de la filière au jour de l'inscription.
+* **RG6 :** Une inscription est validée quand les frais sont intégralement payés, et annulée sur décision du chef de scolarité.
+* **RG7 :** L'attestation n'est délivrée que pour une inscription validée.
+* **RG8 :** Seul un étudiant ayant une inscription validée peut emprunter un ouvrage.
+* **RG9 :** Un emprunt dure 14 jours, max 3 emprunts en cours.
 
 ---
 
@@ -604,245 +602,19 @@ Au début de chaque année académique, les étudiants doivent effectuer différ
 <p align="center">
 <img src="c827006c-879a-4bee-8232-ceb006a04dc5.jpeg" alt="Diagramme de cas d'utilisation" width="100%">
 </p>
-<details>
-<summary><b>Copier le code PlantUML</b></summary>
 
-```plantuml
-@startuml cas_utilisation
-left to right direction
-skinparam packageStyle rectangle
-skinparam shadowing false
-skinparam ranksep 20
-BackgroundColor #EAF2FB
-BorderColor #2F6FAD
-
-actor "Agent de\nscolarité" as Agent
-actor "Chef de\nscolarité" as Chef
-actor "Étudiant" as Etu
-Agent <-- Chef
-
-rectangle "Système de gestion des inscriptions" {
-  usecase "Consulter la liste\ndes inscrits" as UC7
-  usecase "Inscriptions par année académique" as UC8
-  usecase "Enregistrer un étudiant" as UC1
-  usecase "Enregistrer une\ninscription académique" as UC2
-  usecase "Générer l'attestation\nd'inscription" as UC9
-  usecase "Gérer les filières /\nannuler une inscription" as UC11
-  usecase "Associer filière\net niveau" as UC3
-  usecase "Vérifier si\ndéjà inscrit" as UC4
-  usecase "Rechercher\npar matricule" as UC5
-  usecase "Payer les frais" as UC6
-  usecase "Emprunter\nun ouvrage" as UC10
-}
-
-Agent --> UC7
-Agent --> UC8
-Agent --> UC1
-Agent --> UC2
-Agent --> UC9
-Chef --> UC11
-
-UC2 ..> UC3 : <<include>>
-UC2 ..> UC4 : <<include>>
-UC2 ..> UC5 : <<include>>
-UC9 ..> UC5 : <<include>>
-UC2 <.. UC6 : <<extend>>
-UC4 <.. UC10 : <<include>>
-UC6 <-- Etu
-UC10 <-- Etu
-@enduml
-
-</details>
-3.2 Diagramme de classes
+### 3.2 Diagramme de classes
 <p align="center">
 <img src="d656b423-6448-4e75-ab97-e9136e499dd5.jpeg" alt="Diagramme de classes" width="100%">
 </p>
-<details>
-<summary><b>Copier le code PlantUML</b></summary>
 
-@startuml classes
-skinparam classAttributeIconSize 0
-skinparam shadowing false
-skinparam BackgroundColor #EAF2FB
-skinparam BorderColor #2F6FAD
-hide empty members
-
-class Scolarite <<contrôleur>> {
-  + enregistrerEtudiant(...)
-  + rechercherParMatricule(mat): Etudiant
-  + inscrire(mat, filiere, niveau, annee): Inscription
-  + enregistrerPaiement(id, montant)
-  + estDejaInscrit(mat, annee): bool
-  + listeInscrits(annee)
-  + inscriptionsParAnnee(): Map
-  + emprunter(mat, cote, annee): Emprunt
-  + retournerOuvrage(idEmprunt)
-}
-
-class Etudiant {
-  matricule: string
-  nom: string
-  prenoms: string
-  dateNaissance: Date
-  email: string
-  telephone: string
-}
-
-class Inscription {
-  id: string
-  dateInscription: Date
-  montantDu: Montant
-  montantPaye: Montant
-  + statut(): StatutInscription
-  + resteAPayer(): Montant
-  + enregistrerPaiement(m)
-  + annuler()
-}
-
-class Filiere {
-  code: string
-  libelle: string
-  fraisInscription: Montant
-  + proposeNiveau(n): bool
-}
-
-class AnneeAcademique {
-  debut: int
-  + libelle(): string
-  + {static} courante()
-}
-
-enum Niveau {
-  L1, L2, L3, M1, M2
-}
-
-enum StatutInscription {
-  EnAttentePaiement
-  Validee
-  Annulee
-}
-
-class Emprunt {
-  id: string
-  dateEmprunt: Date
-  dateRetourPrevue: Date
-  dateRetour: Date [0..1]
-  + estEnCours(): bool
-  + estEnRetard(d): bool
-  + enregistrerRetour(d)
-}
-
-class Ouvrage {
-  cote: string
-  titre: string
-  auteur: string
-  nombreExemplaires: int
-}
-
-Scolarite "1" o-- "*" Etudiant
-Scolarite "1" o-- "*" Filiere
-Scolarite "1" *-- "*" Inscription
-Scolarite "1" *-- "*" Emprunt
-Etudiant "1" --> "*" Inscription : effectue >
-Inscription "*" --> "1" Filiere : dans >
-Inscription "*" --> "1" Niveau : pour >
-Inscription "*" --> "1" AnneeAcademique : de >
-Inscription ..> StatutInscription
-Filiere "*" --> "1..*" Niveau : ouvre >
-Etudiant "1" --> "*" Emprunt : réalise (< 3 en cours) >
-Emprunt "*" --> "1" Ouvrage : porte sur >
-@enduml
-
-</details>
-3.3 Diagramme de séquence : inscription d'un étudiant
+### 3.3 Diagramme de séquence : inscription d'un étudiant
 <p align="center">
 <img src="2a9be7a1-b56f-4549-a2f9-bca3b7438d85.jpeg" alt="Diagramme de séquence" width="100%">
 </p>
-<details>
-<summary><b>Copier le code PlantUML</b></summary>
 
+---
 
-@startuml sequence_inscription
-autonumber
-skinparam shadowing false
-skinparam maxMessageSize 200
-skinparam ParticipantBackgroundColor #EAF2FB
-skinparam ParticipantBorderColor #2F6FAD
-skinparam LifeLineBorderColor #2F6FAD
-
-actor "Agent de\nscolarité" as agent
-boundary "Interface" as ui
-control "Scolarite" as sc
-entity "Filiere" as fil
-entity "Inscription" as ins
-database "Fichiers\nCSV" as db
-
-agent -> ui : saisit matricule, année, filière, niveau, versement
-activate ui
-ui -> sc : inscrire(matricule, filière, niveau, année, versement)
-activate sc
-
-sc -> sc : rechercherParMatricule(matricule)
-sc -> fil : proposeNiveau(niveau)
-fil --> sc : vrai / faux
-sc -> sc : estDejaInscrit(matricule, année)
-
-alt étudiant inconnu, niveau non ouvert ou déjà inscrit cette année
-  sc --> ui : ErreurScolarite
-  ui --> agent : affiche l'erreur
-else contrôles OK
-  sc -> fil : fraisInscription()
-  fil --> sc : montantDu
-  create ins
-  sc -> ins : <<create>>
-  opt versement > 0
-    sc -> ins : enregistrerPaiement(versement)
-  end
-  sc --> ui : inscription (statut)
-  deactivate sc
-  ui -> db : sauvegarder()
-  db --> ui : données enregistrées
-  ui --> agent : confirme n° d'inscription + statut (Validée / En attente)
-end
-deactivate ui
-@enduml
-
-
-</details>
-4. Implémentation C++
-
-4.1 Architecture
-Puce Encapsulation : chaque classe valide ses données dès sa construction (nom obligatoire, date au format JJ/MM/AAAA vérifiée, montants positifs). Un objet invalide ne peut exister.  
-Puce Gestion d'erreurs : toute violation d'une règle lève une ErreurScolarite avec un message clair. L'interface l'affiche sans planter.  
-Puce C++20 moderne : std::optional pour les recherches, enum class, operator<=> pour comparer les années, std::filesystem.  
-
-4.2 Structure du dépôt
-
-tpi-inscriptions/
-├── CMakeLists.txt
-├── README.md
-├── include/           # En-têtes (.hpp)[span_56](start_span)[span_56](end_span)
-├── src/               # Implémentations (.cpp) + main.cpp[span_57](start_span)[span_57](end_span)
-├── tests/             # Tests unitaires (69 tests)[span_58](start_span)[span_58](end_span)
-├── data/              # Données de démonstration (CSV)[span_59](start_span)[span_59](end_span)
-└── docs/uml/          # Sources PlantUML et images[span_60](start_span)[span_60](end_span)
-
-
-5. Compilation, exécution et tests
-Avec CMake :
-
-cmake -S . -B build
-cmake --build build
-./build/inscriptions
-./build/tests          # Lance les 69 tests unitaires[span_61](start_span)[span_61](end_span)[span_62](start_span)[span_62](end_span)
-
-Sans CMake (g++) :
-
-g++ -std=c++20 -Iinclude src/*.cpp -o inscriptions
-./inscriptions data
-
-
-6. Bilan
-Puce Les 6 fonctionnalités majeures de l'énoncé sont implémentées, testées et validées (69 tests réussis).  
-Puce Les diagrammes UML demandés sont cohérents avec l'architecture du code.  
-Puce Les extensions de persistance CSV sécurisée et de génération d'attestation sont fonctionnelles.
+## 4. Bilan
+* Modélisation UML complète et conforme aux spécifications de l'énoncé.
+* Analyse rigoureuse des acteurs et des règles de gestion du système de sc
