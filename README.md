@@ -540,14 +540,12 @@ g++ -std=c++11 main.cpp -o bibliotheque
 🎓 TP 1 — Application de gestion des inscriptions universitaires
 Module : Modélisation UML & Programmation orientée objet (C++) Outils : PlantUML (modélisation) · C++ (implémentation) · Fichiers CSV (persistance)
 
-
 <h1 align="center">TP 1 - Application de gestion des inscriptions universitaires</h1>
 <p align="center">
-<img src="https://img.shields.io/badge/C%2B%2B-20-00599C?logo=cplusplus&logoColor=white" alt="C++20">
 <img src="https://img.shields.io/badge/UML-PlantUML-2F6FAD" alt="PlantUML">
 <img src="https://img.shields.io/badge/persistance-CSV-6c757d" alt="CSV">
 </p>
-<p align="center"><b>Modélisation UML, Analyse du besoin et Implémentation Bonus</b></p>
+<p align="center"><b>Modélisation UML et Analyse du besoin</b></p>
 
 ## Sommaire
 1. Énoncé
@@ -556,8 +554,7 @@ Module : Modélisation UML & Programmation orientée objet (C++) Outils : PlantU
    - 3.1 Diagramme de cas d'utilisation
    - 3.2 Diagramme de classes
    - 3.3 Diagramme de séquence : inscription d'un étudiant
-4. Implémentation C++ (Bonus)
-5. Bilan
+4. Bilan
 
 ---
 
@@ -627,10 +624,5 @@ Au début de chaque année académique, les étudiants doivent effectuer différ
 
 ---
 
-## 4. Implémentation C++ (Bonus)
-* **Architecture :** Traduction directe du diagramme de classes en C++20 (`std::optional`, `enum class`, encapsulation stricte).
-* **Compilation et tests :**
-```bash
-cmake -S . -B build
-cmake --build build
-./build/tests          # Validation par tests unitaires
+## 4. Bilan
+Ce travail a permis de formaliser l'analyse du besoin du service de scolarité à travers une étude rigoureuse des acteurs et des règles de gestion. La modélisation UML réalisée (cas d'utilisation, classes et séquences) offre une vision claire, cohérente et structurée de l'architecture logicielle de l'application de gestion des inscriptions.
