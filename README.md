@@ -1,7 +1,5 @@
 # TRAVAUX-DE-POO
 Résolution d'exercices et travaux dirigés.
-
-EXERCICE 1 : 
 Exercice 1 : 
 1-) Classe: 
 Livre, Etudiant, Emprunt, Bibliotheque
