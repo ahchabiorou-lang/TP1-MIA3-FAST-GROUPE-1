@@ -32,7 +32,6 @@ Une bibliothèque universitaire souhaite informatiser la gestion de ses **livres
 | `Etudiant` | Un usager de la bibliothèque |
 | `Emprunt` | Classe d'association : un livre prêté à un étudiant, avec ses dates |
 | `Bibliotheque` | Classe de gestion : regroupe les livres, les étudiants et les emprunts |
-| `Etat` | Énumération : `DISPONIBLE` ou `EMPRUNTE` |
 
 > **Pourquoi une classe `Emprunt` ?** Un emprunt possède ses propres informations (date d'emprunt, date de retour) et un même étudiant peut emprunter plusieurs fois le même livre. L'emprunt est donc une entité à part entière, ce qui permet aussi de conserver l'**historique**.
 
