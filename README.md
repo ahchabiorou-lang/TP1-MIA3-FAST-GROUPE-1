@@ -21,8 +21,6 @@ Bibliotheque
 3. Associations entre les classes
 
 Association	Cardinalités	Type Etudiant effectue Emprunt	1 — 0..*	Association Emprunt concerne Livre	0..* — 1	Association Bibliotheque — Livre	1 — 0..*	Agrégation Bibliotheque — Etudiant	1 — 0..*	Agrégation Bibliotheque — Emprunt	1 — 0..*	Composition
-Contrainte métier (à noter sur le diagramme) : pour un livre donné, au plus un emprunt en cours à la fois (dateRetour vide). C'est la traduction de « un livre ne peut être emprunté que par un seul étudiant à la fois ». Un étudiant, lui, peut avoir plusieurs emprunts en cours.
-
 
 4. Diagramme de cas d'utilisation
                  ┌─────────── Système : Gestion de bibliothèque ──────────┐
