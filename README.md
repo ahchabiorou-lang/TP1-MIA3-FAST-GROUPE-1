@@ -540,4 +540,21 @@ g++ -std=c++11 main.cpp -o bibliotheque
 🎓 TP 1 — Application de gestion des inscriptions universitaires
 Module : Modélisation UML & Programmation orientée objet (C++) Outils : PlantUML (modélisation) · C++ (implémentation) · Fichiers CSV (persistance)
 
+<h1 align="center">TP 1 - Application de gestion des inscriptions universitaires</h1>
+
+<p align="center">
+<img src="01_cas_utilisation.png" alt="Diagramme de cas d'utilisation" width="100%">
+</p>
+
+<p align="center">
+<img src="02_classes.png" alt="Diagramme de classes" width="100%">
+</p>
+
+<p align="center">
+<img src="03_sequence_inscription.png" alt="Diagramme de séquence" width="100%">
+</p>
+
+<p align="center">
+<img src="04_etats_inscription.png" alt="Diagramme d'états" width="100%">
+</p>
 
