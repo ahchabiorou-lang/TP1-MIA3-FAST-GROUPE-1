@@ -536,3 +536,483 @@ g++ -std=c++11 main.cpp -o bibliotheque
 | Associations entre classes | `Etudiant`—`Emprunt`—`Livre`, implémentées par des pointeurs |
 | Cardinalités UML | 1 — 0..\* et la contrainte « un seul emprunt en cours par livre » |
 | Agrégation et composition | `Bibliotheque` agrège livres et étudiants, et compose les emprunts |
+
+🎓 TP 1 — Application de gestion des inscriptions universitaires
+Module : Modélisation UML & Programmation orientée objet (C++) Outils : PlantUML (modélisation) · C++ (implémentation) · Fichiers CSV (persistance)
+
+📑 Sommaire
+Rappel du problème
+Analyse du besoin
+Diagramme de cas d'utilisation
+Diagramme de classes
+Diagramme de séquence : inscription d'un étudiant
+Diagramme de séquence complémentaire : emprunt
+Traçabilité entre fonctionnalités et modèle
+Extensions : persistance CSV et attestation
+Régénérer les diagrammes
+1. Rappel du problème
+Au début de chaque année académique, les étudiants doivent effectuer plusieurs démarches d'inscription : identification, choix de la filière, choix du niveau et paiement des frais. Le service de scolarité souhaite une application pour suivre ces inscriptions.
+
+Fonctionnalités attendues :
+
+Enregistrer une inscription académique.
+Associer un étudiant à une filière et à un niveau.
+Vérifier si un étudiant est déjà inscrit.
+Consulter la liste des étudiants inscrits.
+Rechercher un étudiant par matricule.
+Afficher les inscriptions par année académique.
+Classes imposées : Etudiant, Inscription, Filiere, Niveau, AnneeAcademique, Scolarite, plus la classe Emprunt demandée en complément.
+
+Extensions : sauvegarde des données dans des fichiers et génération d'une attestation d'inscription.
+
+2. Analyse du besoin
+2.1 Acteurs
+Acteur	Rôle
+👨‍🎓 Étudiant	Se présente pour s'inscrire, paie les frais, reçoit son attestation, emprunte des ouvrages.
+🧑‍💼 Agent de scolarité	Acteur principal : saisit les inscriptions, consulte et recherche les étudiants, édite les attestations.
+📚 Bibliothécaire	Enregistre les emprunts et les retours d'ouvrages des étudiants inscrits.
+2.2 Règles de gestion
+Code	Règle
+RG1	Le matricule identifie un étudiant de façon unique.
+RG2	Un étudiant ne peut avoir qu'une seule inscription par année académique.
+RG3	Une inscription porte sur une filière, un niveau et une année académique.
+RG4	Une inscription est créée au statut EN_ATTENTE et passe à VALIDEE quand les frais du niveau sont entièrement payés (le paiement peut se faire en plusieurs tranches).
+RG5	L'attestation d'inscription n'est délivrée que pour une inscription VALIDEE.
+RG6	Un emprunt n'est autorisé que si l'étudiant possède une inscription VALIDEE pour l'année courante.
+RG7	Un étudiant a au plus 3 emprunts en cours. La durée d'un emprunt est de 14 jours.
+💡 Choix de conception pour Emprunt : un emprunt désigne ici le prêt d'un ouvrage de la bibliothèque universitaire. Il est intégré au système parce que le droit d'emprunter dépend directement de l'inscription (RG6). C'est donc la fonctionnalité « vérifier si un étudiant est inscrit » qui sert de contrôle d'accès.
+
+3. Diagramme de cas d'utilisation
+Lecture du diagramme :
+
+UC1 – Enregistrer une inscription est le cas central. Il inclut (<<include>>) obligatoirement l'identification (UC2), la vérification de non-inscription (UC3), le choix filière/niveau (UC4) et le paiement (UC5).
+UC6 – Générer une attestation étend (<<extend>>) l'inscription : c'est une extension facultative, déclenchée seulement si l'inscription est validée.
+UC3 – Vérifier si l'étudiant est inscrit est réutilisé par l'emprunt (UC11) : on ne prête un ouvrage qu'à un étudiant inscrit.
+Les cas de consultation (UC7, UC8, UC9) et la sauvegarde (UC10) sont réservés à l'agent de scolarité.
+
+⬆️ CODE UML ⬆️
+Le code PlantUML ci-dessous génère le diagramme ci-dessus
+
+@startuml cas_utilisation
+' TP1 - Diagramme de cas d'utilisation
+title Gestion des inscriptions universitaires - Cas d'utilisation
+left to right direction
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+skinparam shadowing false
+skinparam usecase {
+  BackgroundColor #EEF5FF
+  BorderColor #2B6CB0
+}
+skinparam rectangle {
+  BorderColor #2B6CB0
+}
+
+actor "Étudiant" as ETU
+actor "Agent de scolarité" as AGT
+actor "Bibliothécaire" as BIB
+
+rectangle "Système de gestion des inscriptions universitaires" {
+  usecase "(UC1) Enregistrer une\ninscription académique" as UC1
+  usecase "(UC2) S'identifier\n(matricule / pièce d'identité)" as UC2
+  usecase "(UC3) Vérifier si l'étudiant\nest déjà inscrit" as UC3
+  usecase "(UC4) Associer l'étudiant\nà une filière et un niveau" as UC4
+  usecase "(UC5) Payer les frais\nd'inscription" as UC5
+  usecase "(UC6) Générer une attestation\nd'inscription" as UC6
+  usecase "(UC7) Consulter la liste\ndes étudiants inscrits" as UC7
+  usecase "(UC8) Rechercher un étudiant\npar matricule" as UC8
+  usecase "(UC9) Afficher les inscriptions\npar année académique" as UC9
+  usecase "(UC10) Sauvegarder / charger\nles données (CSV)" as UC10
+  usecase "(UC11) Enregistrer\nun emprunt" as UC11
+  usecase "(UC12) Enregistrer le retour\nd'un emprunt" as UC12
+}
+
+' --- Acteurs (agent et bibliothécaire à gauche, étudiant à droite) ---
+AGT --> UC1
+AGT --> UC6
+AGT --> UC7
+AGT --> UC8
+AGT --> UC9
+AGT --> UC10
+BIB --> UC11
+BIB --> UC12
+UC2 <-- ETU
+UC5 <-- ETU
+
+' --- Relations entre cas d'utilisation ---
+UC1 ..> UC2 : <<include>>
+UC1 ..> UC3 : <<include>>
+UC1 ..> UC4 : <<include>>
+UC1 ..> UC5 : <<include>>
+UC6 ..> UC1 : <<extend>>
+UC11 ..> UC3 : <<include>>
+@enduml
+4. Diagramme de classes
+Lecture du diagramme :
+
+Scolarite est la classe contrôleur (façade) : elle détient les collections d'objets (agrégations o--) et expose toutes les opérations métier. L'interface utilisateur (menu console) ne communique qu'avec elle.
+Inscription est la classe pivot : elle relie un Etudiant à une Filiere, un Niveau et une AnneeAcademique. C'est ce qui répond à l'exigence « associer un étudiant à une filière et à un niveau ».
+Paiement est en composition (*--) avec Inscription : un paiement n'existe pas sans l'inscription qu'il règle. Plusieurs paiements permettent un règlement en tranches (RG4).
+Les frais sont portés par Niveau (fraisInscription), car ils dépendent en général du niveau d'études.
+Emprunt est rattaché à l'Etudiant. La contrainte RG6 (inscription validée obligatoire) est vérifiée par Scolarite::aInscriptionValide() avant chaque création d'emprunt.
+Les énumérations StatutInscription et ModePaiement évitent les valeurs libres et donc les incohérences.
+
+⬆️ CODE UML ⬆️
+Le code PlantUML ci-dessous génère le diagramme ci-dessus
+
+@startuml diagramme_classes
+' TP1 - Diagramme de classes
+title Gestion des inscriptions universitaires - Diagramme de classes
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam class {
+  BackgroundColor #FFFFFF
+  BorderColor #2B6CB0
+  HeaderBackgroundColor #EEF5FF
+  ArrowColor #2B6CB0
+}
+skinparam note {
+  BackgroundColor #FFF8E1
+  BorderColor #C9A227
+}
+
+class Scolarite <<contrôleur>> {
+  + enregistrerInscription(matricule : string, codeFiliere : string, codeNiveau : string, annee : string) : Inscription*
+  + enregistrerPaiement(numeroInscription : string, montant : double, mode : ModePaiement) : Paiement*
+  + estDejaInscrit(matricule : string, annee : string) : bool
+  + aInscriptionValide(matricule : string, annee : string) : bool
+  + rechercherEtudiant(matricule : string) : Etudiant*
+  + rechercherFiliere(code : string) : Filiere*
+  + rechercherNiveau(code : string) : Niveau*
+  + listerInscrits() : vector<Etudiant*>
+  + inscriptionsParAnnee(annee : string) : vector<Inscription*>
+  + enregistrerEmprunt(matricule : string, refOuvrage : string, titre : string) : Emprunt*
+  + enregistrerRetour(idEmprunt : int) : void
+  + nbEmpruntsEnCours(matricule : string) : int
+  + genererAttestation(numeroInscription : string) : void
+  + sauvegarder(dossier : string) : void
+  + charger(dossier : string) : void
+}
+
+class Etudiant {
+  - matricule : string
+  - nom : string
+  - prenom : string
+  - dateNaissance : string
+  - sexe : char
+  - email : string
+  - telephone : string
+  + getMatricule() : string
+  + getNomComplet() : string
+  + afficher() : void
+}
+
+class Inscription {
+  - numero : string
+  - dateInscription : string
+  - statut : StatutInscription
+  + enregistrerPaiement(montant : double, mode : ModePaiement) : Paiement*
+  + montantPaye() : double
+  + resteAPayer() : double
+  + valider() : void
+  + annuler() : void
+  + estValide() : bool
+}
+
+class Filiere {
+  - code : string
+  - libelle : string
+  + afficher() : void
+}
+
+class Niveau {
+  - code : string
+  - libelle : string
+  - fraisInscription : double
+  + getFrais() : double
+}
+
+class AnneeAcademique {
+  - libelle : string
+  - dateDebut : string
+  - dateFin : string
+  - courante : bool
+  + estCourante() : bool
+}
+
+class Paiement {
+  - reference : string
+  - montant : double
+  - datePaiement : string
+  - mode : ModePaiement
+}
+
+class Emprunt {
+  - id : int
+  - refOuvrage : string
+  - titreOuvrage : string
+  - dateEmprunt : string
+  - dateRetourPrevue : string
+  - dateRetourEffective : string
+  + enregistrerRetour(date : string) : void
+  + estEnCours() : bool
+  + estEnRetard(dateDuJour : string) : bool
+}
+
+enum StatutInscription {
+  EN_ATTENTE
+  VALIDEE
+  ANNULEE
+}
+
+enum ModePaiement {
+  ESPECES
+  MOBILE_MONEY
+  VIREMENT
+}
+
+' --- Le contrôleur gère les collections ---
+Scolarite "1" o-- "*" Etudiant : gère >
+Scolarite "1" o-- "*" Inscription : gère >
+Scolarite "1" o-- "*" Emprunt : gère >
+Scolarite "1" o-- "*" Filiere : référence >
+Scolarite "1" o-- "*" Niveau : référence >
+Scolarite "1" o-- "*" AnneeAcademique : référence >
+
+' --- Associations métier ---
+Etudiant "1" -- "0..*" Inscription : effectue >
+Inscription "0..*" -- "1" Filiere : dans >
+Inscription "0..*" -- "1" Niveau : au >
+Inscription "0..*" -- "1" AnneeAcademique : pour >
+Inscription "1" *-- "0..*" Paiement : réglée par >
+Filiere "1..*" -- "1..*" Niveau : propose >
+Etudiant "1" -- "0..*" Emprunt : effectue >
+
+Inscription ..> StatutInscription
+Paiement ..> ModePaiement
+
+note bottom of Inscription
+  Contrainte : un étudiant a au plus
+  une inscription par année académique
+  {unique (etudiant, anneeAcademique)}
+end note
+
+note bottom of Emprunt
+  Contrainte : emprunt autorisé seulement si
+  l'étudiant a une inscription VALIDEE
+  pour l'année courante (max 3 en cours)
+end note
+@enduml
+5. Diagramme de séquence : inscription d'un étudiant
+Lecture du diagramme :
+
+Les participants suivent le découpage Boundary / Control / Entity :
+
+Interface (boundary) : le menu console, seul point de contact de l'agent.
+Scolarite (control) : orchestre l'opération et applique les règles de gestion.
+Etudiant, Inscription, Paiement (entity) : les objets métier.
+Fichiers CSV (database) : la persistance.
+Déroulement :
+
+L'étudiant se présente à l'agent avec son matricule, la filière et le niveau souhaités. L'agent saisit ces données dans l'interface.
+Scolarite recherche l'étudiant. S'il est inconnu (nouveau bachelier), l'objet Etudiant est créé.
+Contrôle RG2 : si l'étudiant est déjà inscrit pour l'année, l'inscription est refusée. C'est la fonctionnalité « vérifier si un étudiant est déjà inscrit ».
+La filière et le niveau sont vérifiés, puis l'Inscription est créée au statut EN_ATTENTE.
+Le paiement est enregistré. Si le reste à payer vaut 0, l'inscription passe à VALIDEE (RG4).
+Les données sont sauvegardées dans les fichiers CSV et l'attestation est générée si l'inscription est validée (RG5).
+
+⬆️ CODE UML ⬆️
+Le code PlantUML ci-dessous génère le diagramme ci-dessus
+
+@startuml sequence_inscription
+' TP1 - Diagramme de séquence : inscription d'un étudiant
+title Inscription d'un étudiant
+autonumber
+skinparam shadowing false
+skinparam sequence {
+  ParticipantBackgroundColor #EEF5FF
+  ParticipantBorderColor #2B6CB0
+  LifeLineBorderColor #2B6CB0
+  ArrowColor #2B6CB0
+}
+
+actor "Étudiant" as ETU
+actor "Agent de\nscolarité" as AGT
+boundary "Interface\n(menu console)" as UI
+control ":Scolarite" as SCO
+
+ETU -> AGT : Présente matricule / pièce d'identité,\nfilière et niveau souhaités
+AGT -> UI : Saisit les données
+activate UI
+UI -> SCO : enregistrerInscription(matricule, codeFiliere, codeNiveau, annee)
+activate SCO
+
+SCO -> SCO : rechercherEtudiant(matricule)
+opt Étudiant inconnu (nouveau bachelier)
+  create entity "etu:Etudiant" as E
+  SCO -> E : <<create>> Etudiant(matricule, nom, prenom, ...)
+end
+
+SCO -> SCO : estDejaInscrit(matricule, annee)
+
+alt Déjà inscrit pour cette année
+  SCO --> UI : Échec : déjà inscrit
+  UI --> AGT : Affiche l'erreur
+  AGT --> ETU : Inscription refusée
+else Non encore inscrit
+  SCO -> SCO : rechercherFiliere(codeFiliere)\nrechercherNiveau(codeNiveau)
+  alt Filière ou niveau inexistant
+    SCO --> UI : Échec : filière ou niveau invalide
+    UI --> AGT : Affiche l'erreur
+  else Données valides
+    create entity "insc:Inscription" as I
+    SCO -> I : <<create>> Inscription(etu, filiere, niveau, annee)
+    note right of I : statut = EN_ATTENTE
+    SCO --> UI : numéro d'inscription + frais à payer
+    UI --> AGT : Affiche le montant
+    AGT --> ETU : Communique le montant des frais
+
+    ETU -> AGT : Paie les frais (espèces, Mobile Money, virement)
+    AGT -> UI : Saisit le paiement
+    UI -> SCO : enregistrerPaiement(numero, montant, mode)
+    SCO -> I : enregistrerPaiement(montant, mode)
+    activate I
+    create entity "p:Paiement" as P
+    I -> P : <<create>> Paiement(reference, montant, mode)
+    I -> I : resteAPayer()
+    opt Frais entièrement réglés (resteAPayer() == 0)
+      I -> I : valider()
+      note right of I : statut = VALIDEE
+    end
+    I --> SCO : statut
+    deactivate I
+
+    database "Fichiers CSV" as CSV
+    SCO -> CSV : sauvegarder(dossier)
+    CSV --> SCO : Données enregistrées
+    SCO --> UI : Succès
+    UI --> AGT : Confirme l'inscription
+
+    opt Inscription VALIDEE
+      AGT -> UI : Demande l'attestation
+      UI -> SCO : genererAttestation(numero)
+      SCO --> UI : attestation_<numero>.txt
+      UI --> AGT : Imprime l'attestation
+      AGT --> ETU : Remet l'attestation d'inscription
+    end
+  end
+end
+deactivate SCO
+deactivate UI
+@enduml
+6. Diagramme de séquence complémentaire : emprunt
+Ce diagramme n'est pas exigé par l'énoncé. Il montre comment la classe Emprunt s'intègre au système et comment les règles RG6 et RG7 sont contrôlées.
+
+
+⬆️ CODE UML ⬆️
+Le code PlantUML ci-dessous génère le diagramme ci-dessus
+
+@startuml sequence_emprunt
+' TP1 - Diagramme de séquence complémentaire : enregistrement d'un emprunt
+title Enregistrement d'un emprunt
+autonumber
+skinparam shadowing false
+skinparam sequence {
+  ParticipantBackgroundColor #EEF5FF
+  ParticipantBorderColor #2B6CB0
+  LifeLineBorderColor #2B6CB0
+  ArrowColor #2B6CB0
+}
+
+actor "Étudiant" as ETU
+actor "Bibliothécaire" as BIB
+boundary "Interface\n(menu console)" as UI
+control ":Scolarite" as SCO
+
+ETU -> BIB : Demande à emprunter un ouvrage (matricule)
+BIB -> UI : Saisit matricule et ouvrage
+activate UI
+UI -> SCO : enregistrerEmprunt(matricule, refOuvrage, titre)
+activate SCO
+
+SCO -> SCO : rechercherEtudiant(matricule)
+SCO -> SCO : aInscriptionValide(matricule, anneeCourante)
+
+alt Aucune inscription VALIDEE pour l'année courante
+  SCO --> UI : Refus : étudiant non inscrit pour l'année en cours
+else Inscription valide
+  SCO -> SCO : nbEmpruntsEnCours(matricule)
+  alt Quota atteint (3 emprunts en cours)
+    SCO --> UI : Refus : quota d'emprunts atteint
+  else Quota non atteint
+    create entity "e:Emprunt" as EMP
+    SCO -> EMP : <<create>> Emprunt(etu, refOuvrage, titre, dateDuJour)
+    note right of EMP : dateRetourPrevue = dateEmprunt + 14 jours
+    database "Fichiers CSV" as CSV
+    SCO -> CSV : sauvegarder(dossier)
+    SCO --> UI : Succès (id, date de retour prévue)
+  end
+end
+deactivate SCO
+UI --> BIB : Affiche le résultat
+deactivate UI
+BIB --> ETU : Remet l'ouvrage ou explique le refus
+@enduml
+7. Traçabilité entre fonctionnalités et modèle
+Fonctionnalité attendue	Cas d'utilisation	Réalisation dans le modèle
+Enregistrer une inscription académique	UC1	Scolarite::enregistrerInscription()
+Associer un étudiant à une filière et à un niveau	UC4	Associations Inscription → Filiere et Inscription → Niveau
+Vérifier si un étudiant est déjà inscrit	UC3	Scolarite::estDejaInscrit()
+Consulter la liste des étudiants inscrits	UC7	Scolarite::listerInscrits()
+Rechercher un étudiant par matricule	UC8	Scolarite::rechercherEtudiant()
+Afficher les inscriptions par année académique	UC9	Scolarite::inscriptionsParAnnee()
+Payer les frais d'inscription	UC5	Scolarite::enregistrerPaiement() → Inscription::enregistrerPaiement()
+Gérer les emprunts	UC11, UC12	Scolarite::enregistrerEmprunt(), Scolarite::enregistrerRetour()
+Extension : sauvegarde dans des fichiers	UC10	Scolarite::sauvegarder(), Scolarite::charger()
+Extension : attestation d'inscription	UC6	Scolarite::genererAttestation()
+8. Extensions : persistance CSV et attestation
+8.1 Format des fichiers CSV
+Le séparateur est le point-virgule ;, pour éviter les conflits avec les virgules dans les noms. Chaque fichier correspond à une classe. Les associations sont stockées sous forme de clés étrangères (matricule, code filière, etc.).
+
+Fichier	Colonnes
+etudiants.csv	matricule;nom;prenom;dateNaissance;sexe;email;telephone
+filieres.csv	code;libelle
+niveaux.csv	code;libelle;fraisInscription
+annees.csv	libelle;dateDebut;dateFin;courante
+inscriptions.csv	numero;matricule;codeFiliere;codeNiveau;annee;dateInscription;statut
+paiements.csv	reference;numeroInscription;montant;datePaiement;mode
+emprunts.csv	id;matricule;refOuvrage;titreOuvrage;dateEmprunt;dateRetourPrevue;dateRetourEffective
+Exemple : inscriptions.csv
+
+numero;matricule;codeFiliere;codeNiveau;annee;dateInscription;statut
+INS-2026-0001;20260001;GL;L1;2026-2027;02/10/2026;VALIDEE
+INS-2026-0002;20250147;IRT;L2;2026-2027;03/10/2026;EN_ATTENTE
+💡 L'ordre de chargement respecte les dépendances : filieres, niveaux, annees et etudiants d'abord, puis inscriptions, paiements et emprunts, qui y font référence.
+
+8.2 Attestation d'inscription
+genererAttestation(numero) produit un fichier texte attestation_<numero>.txt, seulement pour une inscription VALIDEE :
+
+============================================================
+              ATTESTATION D'INSCRIPTION
+============================================================
+Le Service de la Scolarité atteste que :
+
+  Nom et prénom     : DOSSOU Koffi
+  Matricule         : 20260001
+  Né(e) le          : 14/05/2007
+
+est régulièrement inscrit(e) pour l'année académique 2026-2027
+  Filière           : Génie Logiciel (GL)
+  Niveau            : Licence 1 (L1)
+  N° d'inscription  : INS-2026-0001
+  Frais réglés      : 50 000 FCFA
+
+Fait le 02/10/2026                 Le Chef du Service Scolarité
+============================================================
+9. Régénérer les diagrammes
+Les images de ce README sont produites à la volée par le serveur PlantUML, à partir du code affiché sous chaque diagramme. Pour modifier un diagramme :
+
+Copier son code PlantUML.
+Le coller sur plantuml.com/plantuml, ou l'ouvrir dans VS Code avec l'extension PlantUML (Alt + D pour l'aperçu).
+Remplacer le lien de l'image par le nouveau lien SVG fourni par le serveur.
+
